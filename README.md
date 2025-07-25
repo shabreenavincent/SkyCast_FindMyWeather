@@ -1,70 +1,264 @@
-# Getting Started with Create React App
+# SkyCast - Find My Weather
+## Date:25-07-2025
+-## Objec-tive:
+To build a responsive single-page application using React that allows users to enter a city name and retrieve real-time weather information using the OpenWeatherMap API. This project demonstrates the use of Axios for API calls, React Router for navigation, React Hooks for state management, controlled components with validation, and basic styling with CSS.
+## Tasks:
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+#### 1. Project Setup
+Initialize React app.
 
-## Available Scripts
+Install necessary dependencies: npm install axios react-router-dom
 
-In the project directory, you can run:
+#### 2. Routing
+Set up BrowserRouter in App.js.
 
-### `npm start`
+Create two routes:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+/ – Home page with input form.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+/weather – Page to display weather results.
 
-### `npm test`
+#### 3. Home Page (City Input)
+Create a controlled input field for the city name.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Add validation to ensure the input is not empty.
 
-### `npm run build`
+On valid form submission, navigate to /weather and store the city name.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+#### 4. Weather Page (API Integration)
+Use Axios to fetch data from the OpenWeatherMap API using the city name.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Show temperature, humidity, wind speed, and weather condition.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Convert and display temperature in both Celsius and Fahrenheit using useMemo.
 
-### `npm run eject`
+#### 5. React Hooks
+Use useState for managing city, weather data, and loading state.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+Use useEffect to trigger the Axios call on page load.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+Use useCallback to optimize form submit handler.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Use useMemo for temperature conversion logic.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### 6. UI Styling (CSS)
+Create a responsive and clean layout using CSS.
 
-## Learn More
+Style form, buttons, weather display cards, and navigation links.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Programs:
+## WeatherCard.js code:
+```
+import React from "react";
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+function WeatherCard({ data, tempF }) {
+  return (
+    <div className="weather-card">
+      <h2>{data.name}, {data.sys.country}</h2>
+      <p><strong>Condition:</strong> {data.weather[0].description}</p>
+      <p><strong>Temperature:</strong> {data.main.temp} °C / {tempF.toFixed(1)} °F</p>
+      <p><strong>Humidity:</strong> {data.main.humidity}%</p>
+      <p><strong>Wind Speed:</strong> {data.wind.speed} m/s</p>
+    </div>
+  );
+}
 
-### Code Splitting
+export default WeatherCard;
+```
+## app.css code:
+```
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(to right, #00c6ff, #0072ff);
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+.app-container {
+  width: 100%;
+}
 
-### Analyzing the Bundle Size
+.container {
+  background: #ffffffdd;
+  padding: 30px;
+  margin: 20px auto;
+  border-radius: 10px;
+  max-width: 400px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+input {
+  padding: 10px;
+  width: 70%;
+  margin-right: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
 
-### Making a Progressive Web App
+button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #0072ff;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+button:hover {
+  background-color: #005bd1;
+}
 
-### Advanced Configuration
+.weather-card {
+  margin-top: 20px;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f1f1f1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+.error {
+  color: red;
+  margin-top: 10px;
+}
+```
+## Weather.js code:
+```
+import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 
-### Deployment
+function Weather() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const city = location.state?.city;
+  const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+  const apiKey = "cd47a859eea74758b1684113251107";
 
-### `npm run build` fails to minify
+  useEffect(() => {
+    if (!city) {
+      navigate("/");
+      return;
+    }
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+    const fetchWeather = async () => {
+      setLoading(true);
+      setError("");
+
+      try {
+        const url = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("City not found");
+
+        const data = await res.json();
+        setWeatherData(data);
+      } catch (err) {
+        setError("Error fetching weather data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchWeather();
+  }, [city, navigate]);
+
+  if (loading) return <div className="weather-wrapper"><p>Loading...</p></div>;
+  if (error) return <div className="weather-wrapper"><p>{error}</p></div>;
+
+  const { name, country } = weatherData.location;
+  const { temp_c, condition, last_updated } = weatherData.current;
+
+  return (
+    <div className="weather-wrapper">
+      <div className="weather-card">
+        <h2>{name}, {country}</h2>
+        <p><strong>{temp_c}°C</strong></p>
+        <p>{condition.text}</p>
+        <img src={`https:${condition.icon}`} alt={condition.text} />
+        <p>Last updated: {last_updated}</p>
+      </div>
+    </div>
+  );
+}
+
+export default Weather
+```
+## app.js code:
+```
+import React from "react";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Weather from "./pages/Weather";
+import "./App.css";
+
+function App() {
+  return (
+    <Router>
+      <div className="app-container">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/weather" element={<Weather />} />
+        </Routes>
+      </div>
+    </Router>
+  );
+}
+
+export default App;
+```
+## Home.js code:
+```
+import React, { useState, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
+
+function Home() {
+  const [city, setCity] = useState("");
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!city.trim()) {
+        setError("Please enter a city name.");
+      } else {
+        setError("");
+        navigate("/weather", { state: { city } });
+      }
+    },
+    [city, navigate]
+  );
+
+  return (
+    <div className="container">
+      <h1>SkyCast</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={city}
+          placeholder="Enter city name"
+          onChange={(e) => setCity(e.target.value)}
+        />
+        <button type="submit">Get Weather</button>
+      </form>
+      {error && <p className="error">{error}</p>}
+    </div>
+  );
+}
+
+export default Home;
+```
+## Output:
+
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/860c0991-5114-49a0-abba-5ec0ab18f709" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/f66fd03f-eaf6-4c86-9b1f-bff1c9ae1e80" />
+
+## Result:
+A responsive single-page application using React that allows users to enter a city name and retrieve real-time weather information using the OpenWeatherMap API has been built successfully. 
