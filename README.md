@@ -1,5 +1,5 @@
 # SkyCast - Find My Weather
-## Date:
+## Date:25-07-2025
 ## Objective:
 To build a responsive single-page application using React that allows users to enter a city name and retrieve real-time weather information using the OpenWeatherMap API. This project demonstrates the use of Axios for API calls, React Router for navigation, React Hooks for state management, controlled components with validation, and basic styling with CSS.
 ## Tasks:
@@ -49,6 +49,9 @@ Style form, buttons, weather display cards, and navigation links.
 ## Programs:
 
 ## Output:
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/36e644fb-76e6-4dab-8e4a-cb9d9f255150" />
+<img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/c25f4f5f-334a-4653-a3e0-c914e64f8eef" />
+
 
 ## Result:
 A responsive single-page application using React that allows users to enter a city name and retrieve real-time weather information using the OpenWeatherMap API has been built successfully. 
